@@ -1,0 +1,7 @@
+# 강의 정보
+
+- 강의 노트
+  - https://docs.google.com/document/d/1j6mU7Q5gng1mAJZUKUVya4Rs0Jvn5wn_bCUp3rq41nQ/edit
+
+- 깃헙 
+  - https://github.com/keesun/inflearn-the-java-test
