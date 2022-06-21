@@ -184,6 +184,8 @@ AssertJ, Hemcrest, Truth 등의 라이브러리를 사용할 수도 있다.
 - intellij 세팅
   - 기본적으로 intellij에서는 모든 test를 실행해주니까, tag로 필터릴 해서 돌릴려면  
   - 세팅을 바꿔 줘야함 -> 문서 참조
+  - 인텔리제이 태그 세팅에서 tag에 expression가능 👍
+    - 즉 !같은거 사용가능
 
 - 메이븐에서 test 필터링 하려면? 아래 dependency 이용
 
@@ -234,7 +236,11 @@ AssertJ, Hemcrest, Truth 등의 라이브러리를 사용할 수도 있다.
   - 테스트 메소드에 태그를 추가할 수 있다.
   - 하나의 테스트 메소드에 여러 태그를 사용할 수 있다.
   - tag 관련 expression은 아래 링크 참조
-    - https://junit.org/junit5/docs/current/user-guide/#running-tests-tag-expressions
+    - <https://junit.org/junit5/docs/current/user-guide/#running-tests-tag-expressions>
+
+- 추가
+  - JUnit4의 @Categry가 JUnit5에서 @Tag로 변경됨
+  - <https://www.baeldung.com/junit-5-migration>
 
 ## JUnit 5 커스텀 태그
 
@@ -320,11 +326,205 @@ JUnit 5 애노테이션을 조합하여 커스텀 태그를 만들 수 있다
 
 ## JUnit 5 테스트 반복하기 2부
 
+`@ParameterizedTest` 를 좀더 자세히 살펴봄
+
+- `@ValueSource(strings = {"날씨가", "많이", "추워지고", "있습니다."})
+  - 여기서는 string만 썻는데 strings 말고 다양한 attribute있음
+
+- 인자 값들의 소스
+  - @ValueSource
+  - @NullSource, @EmptySource, @NullAndEmptySource
+    - NullSource는 method의 param에 null을 넣어줌
+    - EmptySource는 method의 param에 빈문자열 넣어줌
+    - NullAndEmptySource 는 위 두개 합친 composed annotation. 즉 위 두개를 각각 붙인거랑 같음
+      - > test 2번 추가되는것.
+  - @EnumSource
+  - @MethodSource
+  - @CsvSource
+    - 이거 쓰면 여러 인자를 넘겨줄수 잇음. valueSource는 method param 으로 한개만 사용 가능했었음
+  - @CvsFileSource
+  - @ArgumentSource
+
+아래 예제를 보면 대강 사용법 알수 있음
+
+```java
+    // ValueSource로 int를 받을수 있따. 
+    @ValueSource(ints = {10,20,30})
+    void parameterizedTest2(Integer message) {
+        System.out.println("message = " + message);
+    }
+
+    // ValueSource로 받은 값을 다른 type에 넣을수 있는데. 이떄 @ConvertWith 로 컨버터 준거 중요
+    @ValueSource(ints = {10,20,30})
+    void parameterizedTest3(@ConvertWith(StudyConverter.class) Study message) { // 이렇게 받으려면 컨버터가 필요함 ( spring 꺼 말고..)
+        System.out.println("message = " + message.getValue());
+    }
+
+    static class StudyConverter extends SimpleArgumentConverter {
+
+        @Override
+        protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
+            assertEquals(Study.class, targetType, "Can only convert to study");
+            return new Study(Integer.parseInt(source.toString()));
+        }
+    }
+
+
+    //CsvSource 로는 여러 인자를 받을수 있는데 아래와 같은 형태로 인자들을 전달하는거 주의
+    // {"인자1, 인자2","인자3, 인자3"} => 인자1,2가 한세트, 인자3,4가 한세트
+    // 구분은 ,로하는데 구분자 변경도 가능하다함. 
+    @DisplayName("스터디 만들기")
+    @ParameterizedTest( name = "{index} {displayName} message = {0}") // test method의 param을 {0}으로 받음.
+    @CsvSource({"10, '자바 테스트'", "20, 스터디 "})   // 두개의 인자를 넘겨줄수 있음 CsvSource이용하면.
+    void parameterizedTest4(Integer limit, String name) {
+        System.out.println("message = " + new Study(limit,name).toString());
+    }
+
+    @DisplayName("스터디 만들기")
+    @ParameterizedTest( name = "{index} {displayName} message = {0}") // test method의 param을 {0}으로 받음.
+    @CsvSource({"10, '자바 테스트'", "20, 스터디 "})   // 두개의 인자를 넘겨줄수 있음 CsvSource이용하면.
+    void parameterizedTest5(ArgumentsAccessor argumentsAccessor) {
+        Study study = new Study(argumentsAccessor.getInteger(0), argumentsAccessor.getString(1));
+        System.out.println("message = " + study.toString());
+    }
+
+    @DisplayName("스터디 만들기")
+    @ParameterizedTest( name = "{index} {displayName} message = {0}") // test method의 param을 {0}으로 받음.
+    @CsvSource({"10, '자바 테스트'", "20, 스터디 "})   // 두개의 인자를 넘겨줄수 있음 CsvSource이용하면.
+    void parameterizedTest6(@AggregateWith(StudyAggregator.class) Study study) {
+        System.out.println("message = " + study.toString());
+    }
+
+    // 반드시 public class이거나
+    // static inner class여야함
+    static class StudyAggregator implements ArgumentsAggregator {
+
+        @Override
+        public Object aggregateArguments(ArgumentsAccessor argumentsAccessor, ParameterContext parameterContext) throws ArgumentsAggregationException {
+            return new Study(argumentsAccessor.getInteger(0), argumentsAccessor.getString(1));
+        }
+    }
+
+
+```
+
+- 인자 값 타입 변환
+  - 암묵적인 타입 변환
+    - 아래 참고
+    - <https://junit.org/junit5/docs/current/user-guide/#writing-tests-parameterized-tests-argument-conversion-implicit>
+  - 명시적인 타입 변환
+    - > 위 예제 ValueSource에서 확인함
+    - SimpleArgumentConverter 상속 받은 구현체 제공
+    - @ConvertWith
+
+- 인자 값 조합
+  - > CsvSource 예제에서 확인함
+  - ArgumentsAccessor
+  - 커스텀 Accessor
+    - ArgumentsAggregator 인터페이스 구현
+    - @AggregateWith
+
+크게 중요한 장은 아닌듯.
+
 ## JUnit 5 테스트 인스턴스
+
+그 test 짤때 test method가 있는 class를 만들게 되는데, 이거 instance 만들어 지는 전략을 소개함.
+기본적으로는 method마다 class의 인스턴스가 만들어짐.
+즉 class에 field가 있을때 test method안에서 해당 field의 값을 조작해도, 다음 method에서는 class의 인스턴스가
+새로 생성되므로.. field은 초기화된 값 그대로 나오게됨.
+
+- JUnit은 테스트 메소드 마다 테스트 인스턴스를 새로 만든다.
+  - 이것이 기본 전략.
+  - 테스트 메소드를 독립적으로 실행하여 예상치 못한 부작용을 방지하기 위함이다.
+    - > 즉 테스트간 의존성을 없애기 위함. 테스트간 공유하는 변수가 있거나.. 하면 테스트 순서에 따라 문제가 나올수도있고..
+    - > 테스트는 순서없이 실행됨.
+    - > 물론 JUnit 5에서는 선언된 순서대로 test가 실행되기는 하는데.. 매번 그런건 또 아님. 👍
+  - **이 전략을 JUnit 5에서 변경할 수 있다** 👍
+    - > 즉 이거는 JUnit 5에서만 가능
+
+- `@TestInstance(TestInstance.Lifecycle.PER_CLASS)`
+  - 이걸 test class 위에 붙여주면된다.
+  - 테스트 클래스당 인스턴스를 하나만 만들어 사용한다.
+  - 장점.
+    - test마다 class 인스턴스 만들지 않아도 되니.. 약간의 성능향상
+    - 일부 test 제약을 완화할수 있음
+    - 예를 들면
+      - @BeforeAll과 @AfterAll은 원래 static method여야하는데, 이제는 static이 아니어도 됨
+      - 즉  @BeforeAll과 @AfterAll을 인스턴스 메소드 또는 인터페이스에 정의한 default 메소드로 정의할 수도 있다
+    - 경우에 따라, 테스트 간에 공유하는 모든 상태를 @BeforeEach 또는 @AfterEach에서 초기화 할 필요가 있다.
+  
+즉 test class의 인스턴스를 하나만 만들어서 쓰는 방법인데, 이게 유용한 케이스가 하나 있다고함
+그건 아래 테스트 순서에 나옴
 
 ## JUnit 5 테스트 순서
 
+내부적으로 정해진 순서가 있기는 함.
+  
+실행할 테스트 메소드 특정한 순서에 의해 실행되지만 어떻게 그 순서를 정하는지는 의도적으로 분명히 하지 않는다.  
+(테스트 인스턴스를 테스트 마다 새로 만드는 것과 같은 이유, 즉 test method간 디펜던시 없게 하려고..)  
+  
+경우에 따라, 특정 순서대로 테스트를 실행하고 싶을 때도 있다.  
+> integration test나, 시나리오 test할때나.. (회원이 가입하고.. 로그인하고..) => 즉 use case test
+> 즉 test간에 의존성도 있고 status도 있고 data도 공유하고.. 이럴려면 test class는 한번만 만들어 져야함 👍
+
+그 경우에는 테스트 메소드를 원하는 순서에 따라 실행하도록  
+`@TestInstance(Lifecycle.PER_CLASS)`와 함께 @TestMethodOrder를 사용할 수 있다.  
+
+- `@TestMethodOrder(MethodOrderer.OrderAnnotation.class)`
+  - 이걸 `@TestInstance(Lifecycle.PER_CLASS)` 와 함꼐 test class에 붙여줌
+    - > 물론 반드시 같이 써야 하는건 아니고. 위에 예시를 든 상황들에서는 같이 쓰면 좋다는것!!
+    - > 근데 생각해보면 class 인스턴스가 method마다 만들어지는 상황에서 굳이 test 순서를 맞추는게 의미가 없을거 같다함
+    - > 즉, class 인스턴스가 하나인 상황에서.. 시나리오 test 같은걸 준비할떄 test 순서를 맞추는게 의미 있음
+  - 이떄 attribute의 value는 MethodOrder 구현체의 class를 주면된다
+  - 기본적으로 아래 세가지가 준비 되어 있음
+    - Alphanumeric
+    - OrderAnnoation
+    - Random
+
+- `@TestMethodOrder(MethodOrderer.OrderAnnotation.class)`
+  - OrderAnnotation 을 이용한 경우
+  - Test method에 `@Order` 어노테이션을 보고 test를 순서대로 실행해줌
+  - 주의!
+    - @Order는 junit꺼 붙여야함. spring꺼 말고.!
+
+- JUnit4 용 순서 맞추기
+  - <https://github.com/junit-team/junit4/wiki/Test-execution-order>
+  - from version 4.11 부터 아래 어노테이션 사용
+  - @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
 ## JUnit 5 junit-platform.properties
+
+JUnit을 설정하는 기능, JUnit5에서 파일로 제어할수 있도록 제공함
+
+- JUnit 설정 파일로, 클래스패스 루트 (src/test/resources/)에 넣어두면 적용된다.
+  - 중요! 👍
+    - 해당 resources를 만들었는데 intellij에서 test resources로 인식하지 않으면 이걸 classpath로 사용안함
+    - 즉 적용이안됨
+    - 그래서 test를 실행할떄 resources directory를 classpath로 사용하려면
+    - intellij project sturucture의 module에 가서 해당 package를 test resouce로 등록해줘야함
+    - 또는 오른쪽 클릭 mark directory as로 세팅.
+    - > 이거 봤었음
+
+- 테스트 인스턴스 라이프사이클 설정
+  - junit.jupiter.testinstance.lifecycle.default = per_class
+  - > 어노테이션으로 학습했던거.. 이거 file로 세팅하면 모든 test전체 다걸림
+
+- 확장팩 자동 감지 기능
+  - junit.jupiter.extensions.autodetection.enabled = true
+  - > 다음 강좌 주제.
+
+- @Disabled 무시하고 실행하기
+  - junit.jupiter.conditions.deactivate = org.junit.*DisabledCondition
+  - > org.junit.~ package 아래있는 DisabledCondition class를 무시 하겠다는것.
+  - > 만약 @DisabledOnJre같은거 무시하고 실행하려면?
+  - > DisabledOnJreCondition 를 DisabledCondition 대신 쓰면됨.
+
+- 테스트 이름 표기 전략 설정
+  - junit.jupiter.displayname.generator.default = org.junit.jupiter.api.DisplayNameGenerator$ReplaceUnderscores
+  - > 앞서 살펴봤었음 annotation으로..
+  - 물론 @DisplayName을 붙였다면 이거대로 이름이 출력됨. 이게 우선순위가 가장 높음 👍
+
+이거 말고도 한가지 더 세팅할수 있는데, 그건 실험적인 기능이라서 강좌에서는 다루지 않음
 
 ## JUnit 5 확장 모델
 
