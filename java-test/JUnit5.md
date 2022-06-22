@@ -621,4 +621,47 @@ public class FindSlowTestExtension implements BeforeTestExecutionCallback, After
 
 ## JUnit 5 마이그레이션
 
+JUnit 5가 제공하는 JUnit 4 마이그레이션 
+
+- 기본적으로 spring boot로 프로젝트를 만들면 vintage-engine이 빠진상태라고함
+  - > 이게 있어야 JUnit 4 test들을 실행할수 잇음
+  - 🥉 근데 spring boot 2.7.0으로 만드니 강사 화면이랑 다름
+    - 즉 exclusions으로  vintage-engine 이 빠져 있어야하는데. 이미 해당 문구는 없음
+    - 근데 dependency에도 vintage-engine이 들어 있찌는 않음
+
+    ```xml
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <scope>test</scope>
+            </dependency>
+
+    ```
+    > 2.7.0에서 어떻게 세팅해야 할지 나중에 확인 필요
+
+- JUnit 4로 작성한 test는 
+  - JUnit 5의 Junit platform이 vintage 엔진을 통해 실행시켜 주는듯
+  - `@Test` 도 jupiter꺼를 쓰면 안되고 JUnit 꺼를 쓰면 이게 JUnit 4 꺼임
+  
+- JUnit5에서 Vintage 엔진 추가헤서 JUnit4 test 돌릴땐 제약사항이 잇음
+  - @Rule은 기본적으로 지원하지 않음
+  - junit-jupiter-migrationsupport 모듈을 추가해서, 이게 제공하는
+  - @EnableRuleMigrationSupport를 사용하면 다음 타입의 Rule을 지원한다.
+    - ExternalResource
+    - Verifier
+    - ExpectedException
+
+
+- Junit4 -> Junit5
+  - @Category(Class) -> @Tag(String)
+  - @RunWith, @Rule, @ClassRule -> @ExtendWith, @RegisterExtension
+  - @Ignore -> @Disabled
+  - @Before, @After,  -> @BeforeClass, @AfterClass
+  - @BeforeEach, @AfterEach,  -> @BeforeAll, @AfterAll
+
+
+> 이 양반 Rest 강좌.. 괜찮을수 있을거 같음. Test Case도 짯네. 보니까
+
 ## JUnit 5 연습 문제
+
+학습했던 내용 정리 하는 시간
