@@ -528,6 +528,97 @@ JUnit을 설정하는 기능, JUnit5에서 파일로 제어할수 있도록 제�
 
 ## JUnit 5 확장 모델
 
+- JUnit 4의 확장 모델(확장하는 방법)은 아래 세가지 였다
+  - @RunWith(Runner), TestRule, MethodRule
+- JUnit 5의 확장 모델은 단 하나, Extension
+
+- 확장팩 등록 방법. 크게 아래 세가지가 있음
+  - > 여기서는 두가지만 볼꺼고, 단순한 사용방법으로 예시를 만들어봄
+  - 선언적인 등록 @ExtendWith
+  - 프로그래밍 등록 @RegisterExtension
+  - 자동 등록 자바 ServiceLoader 이용 
+    - > 이거는 가이드 문서 참조하라고 함
+
+- 확장 모델 만드는 가이드
+  - <https://junit.org/junit5/docs/current/user-guide/#extensions>
+  - 상당히 내용이 많음.
+  - 즉. 확장 모델이란
+    - test instance를 만들고, parameter resolution( param di 하는거. .등). test lifecycle callback 호출
+    - 등등 테스트를 어떻게 진행할지 전반에 걸쳐 세팅하는것
+
+- 예시
+
+```java
+
+  //@ExtendWith(FindSlowTestExtension.class)  // extension 사용하는 첫번째 방법. 선언적 방법
+                                              // 단점. 이방법으로는 FindSlowTestExtension 의 인스턴스 생성을 제어할수 없다.
+                                              // 즉, 만약 test마다 FindSlowTestExtension의 Threshold를 다르게 주고 싶다면?
+                                              //FindSlowTestExtension 의 생성자로 Threshold를 줘야하는데.. 이걸 할수가 없음
+  @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+  class StudyTest {
+
+      // 아래 처럼만 하면 extension이 등록됨.
+      @RegisterExtension
+      static FindSlowTestExtension findSlowTestExtension = new FindSlowTestExtension(1000L);
+
+
+      @Test
+      @DisplayName("Slow test")
+      void slow_test() throws InterruptedException {
+          Thread.sleep(1005L);
+
+          System.out.println("extension 확인을 위한 느린 테스트");
+      }
+  }
+
+```
+
+```java
+// lifecyle callback 두개 구현
+// 오래 걸리는 test case를 찾아서 SlowTest 어노테이션을 사용하도록 권장하는 기능
+public class FindSlowTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
+
+//    private static final long THRESHOLD = 1000L; // 1초
+
+    private long THRESHOLD;
+
+    public FindSlowTestExtension(long THRESHOLD) {
+        this.THRESHOLD = THRESHOLD;
+    }
+
+    @Override
+    public void beforeTestExecution(ExtensionContext extensionContext) throws Exception {
+        String testClassName = extensionContext.getRequiredTestClass().getName();
+        String testMethodName = extensionContext.getRequiredTestMethod().getName();
+        ExtensionContext.Store store = extensionContext.getStore(ExtensionContext.Namespace.create(testClassName, testMethodName));
+
+        store.put("START_TIME", System.currentTimeMillis());
+    }
+
+    @Override
+    public void afterTestExecution(ExtensionContext extensionContext) throws Exception {
+
+        // 리플렉션임. 이걸로 SlowTest 어노테이션이 이미 붙은 Test는 무시하게함
+        Method requiredTestMethod = extensionContext.getRequiredTestMethod();
+        SlowTest annotation = requiredTestMethod.getAnnotation(SlowTest.class);
+
+        String testClassName = extensionContext.getRequiredTestClass().getName();
+        String testMethodName = extensionContext.getRequiredTestMethod().getName();
+        ExtensionContext.Store store = extensionContext.getStore(ExtensionContext.Namespace.create(testClassName, testMethodName));
+
+        long start_time = store.remove("START_TIME", long.class);
+        long duratoin = System.currentTimeMillis() - start_time;
+
+        if( duratoin > THRESHOLD && annotation == null) {
+            System.out.printf("Please consider mark method [%s] with @SlowTest.", testMethodName);
+        }
+
+    }
+
+}
+
+```
+
 ## JUnit 5 마이그레이션
 
 ## JUnit 5 연습 문제

@@ -1,7 +1,9 @@
 package me.whiteship.infleanthejavatest;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.aggregator.AggregateWith;
 import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
@@ -18,8 +20,26 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
+
+//@ExtendWith(FindSlowTestExtension.class)  // extension 사용하는 첫번째 방법. 선언적 방법
+                                            // 단점. 이방법으로는 FindSlowTestExtension 의 인스턴스 생성을 제어할수 없다.
+                                            // 즉, 만약 test마다 FindSlowTestExtension의 Threshold를 다르게 주고 싶다면?
+                                            //FindSlowTestExtension 의 생성자로 Threshold를 줘야하는데.. 이걸 할수가 없음
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StudyTest {
+
+    // 아래 처럼만 하면 extension이 등록됨.
+    @RegisterExtension
+    static FindSlowTestExtension findSlowTestExtension = new FindSlowTestExtension(1000L);
+
+
+    @Test
+    @DisplayName("Slow test")
+    void slow_test() throws InterruptedException {
+        Thread.sleep(1005L);
+
+        System.out.println("extension 확인을 위한 느린 테스트");
+    }
 
     @Test
     @DisplayName("스터디 만들기")
