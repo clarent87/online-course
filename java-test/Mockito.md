@@ -24,8 +24,44 @@
   - Mock이 어떻게 동작해야 하는지 관리하는 방법
   - Mock의 행동을 검증하는 방법
 
-
 ## Mock 객체 만들기
+
+코드에 MemberService, StudyRepository 가 interface만 있는채로 테스트를 작성하는 예제임
+> 뻔한 예제긴 함
+
+Mockito로 Mock 객체를 일단 만드는 방법은 아래 세가지 
+
+```java
+
+// Method에서 Mockito의 static method인 mock을 이용한다. 
+// 이때 param은 type을 넣어주면 된다. (interface나 class)
+// 원리는 그냥 생으로 interface를 instance화 한거랑 동일
+MemberService memberService = mock(MemberService.class);
+StudyRepository studyRepository = mock(StudyRepository.class);
+
+// 또는 아래 처럼 Mock Extension을 이용
+// ExtendWith는 Junit5 어노테이션
+// 앞서 Junit5 extension은 만들어 봤었다. ( test method 수행시간 보고 slowTest 어노테이션 붙여라 경고 주려고)
+// MockitoExtension 은 @Mock 어노테이션을 처리해줌
+@ExtendWith(MockitoExtension.class)
+class StudyServiceTest {
+
+    // 이렇게 field로 주입 받아서 test method들에서 활용해도 되고
+    @Mock MemberService memberService;
+    @Mock StudyRepository studyRepository;
+
+    // 아래 처럼 test method의 param으로 받아서 해당 test 에서만 써도 된다.
+    @Test
+    void createStudyService(@Mock MemberService memberService,
+                            @Mock StudyRepository studyRepository) {
+        StudyService studyService = new StudyService(memberService, studyRepository);
+        assertNotNull(studyService); // null이면 error
+    }
+}
+
+```
+
+
 
 ## Mock 객체 stubbing
 
