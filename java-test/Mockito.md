@@ -10,7 +10,7 @@
     - > 뭐 대충 이렇게 생각하는 사람들도 있다함. 이부분은 논란이 있을수도 있음
 - 강사 의견
   - 제어가 불가능한 외부 서비스 정도만 mocking하면 될거 같다함
-  - 즉, 이미 code에 만들어둔 class들을 굳이 mocking해서 unit test를 만드는게 의미가 있나.. 싶다고함. 
+  - 즉, 이미 code에 만들어둔 class들을 굳이 mocking해서 unit test를 만드는게 의미가 있나.. 싶다고함.
   - > 음. db나 mqtt, rest같은것은 mocking하는게 맞겠지?
   - > 추가적으로 외부 서비스도 test bad를 제공하는 경우는 거기에 대고 test code만든다함. -> 이거 system test? 그런개념인가?
   - > Unit test는 아닐거 같음.
@@ -29,7 +29,7 @@
 코드에 MemberService, StudyRepository 가 interface만 있는채로 테스트를 작성하는 예제임
 > 뻔한 예제긴 함
 
-Mockito로 Mock 객체를 일단 만드는 방법은 아래 세가지 
+Mockito로 Mock 객체를 일단 만드는 방법은 아래 세가지
 
 ```java
 
@@ -61,11 +61,72 @@ class StudyServiceTest {
 
 ```
 
-
-
 ## Mock 객체 stubbing
 
+stubbing 이란 mock 객체의 행동을 조작하는!. 앞선 챕터에서는 Mock 객체만 만들었지 Mock 객체의 method 행동을 제어하지는
+않았음
+  
+- Mock 객체 기본 동작
+  - Null을 리턴한다. (Optional 타입은 Optional.empty 리턴)
+  - Primitive 타입은 기본 Primitive 값.
+  - 콜렉션은 비어있는 콜렉션.
+  - Void 메소드는 예외를 던지지 않고 아무런 일도 발생하지 않는다.
+
+- stubbing 기본
+
+  ```java
+  // 모키토 스터빙은 아래 처럼 진행
+  when(memberService.findById(any())) // memberService.findById(any()) 가 호출이 되면.
+          .thenReturn(Optional.of(member)) // Optional.of(member)를 리턴 해라
+
+  ```
+
+  - 여기서 any()는 argument matcher임. 이경우는 findById에 어떤 param이 오던 member optional이 return 됨
+    - 참조
+      - <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#2>
+      - <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/ArgumentMatchers.html>
+
+- **Void 메소드**에 대해 특정 매개변수를 받거나 호출된 경우 예외를 발생 시킬 수 있다.
+  - Subbing void methods with exceptions
+  - > 당연한 얘긴데 void method의 경우 thenReturn같은게 있을수가 없음.
+
+  ```java
+      // 2. void method 호출시 예외 던지는 스터빙
+      // 모키토 문서 Stubbing void methods with exceptions 에서 보면 void method는 특수하게도 예외 스터빙은 아래처럼 해야함
+      doThrow(new IllegalArgumentException()).when(memberService).validate(1L);
+      assertThrows(RuntimeException.class, () -> {
+          memberService.validate(1L);
+      });
+
+  ```
+
+- 메소드가 동일한 매개변수로 여러번 호출될 때 각기 다르게 행동호도록 조작할 수도 있다.
+  - Stubbing consecutive calls
+
+  ```java
+      // 3. 메소드가 동일한 매개변수로 여러번 호출될 때 각기 다르게 행동호도록 조작할 수도 있다.
+      // Stubbing consecutive calls
+      when(memberService.findById(any()))
+              .thenReturn(Optional.of(member)) //  findById 첫번째 호출시
+              .thenThrow(new RuntimeException()) //  findById 두번째 호출시
+              .thenReturn(Optional.empty()); // findById 세번쨰 호출시
+
+
+      Optional<Member> byId = memberService.findById(1L); // findById 첫번째 호출시
+      assertEquals("keesun@email.com", byId.get().getEmail());
+
+      assertThrows(RuntimeException.class, () -> {
+          memberService.findById(2L); //  findById 두번째 호출시
+      });
+
+      assertEquals(Optional.empty(), memberService.findById(3L)); // findById 세번쨰 호출시
+
+  ```
+
+
 ## Mock 객체 stubbing 연습문제
+
+연습문제 풀이인데, 간단함
 
 ## Mock 객체 확인
 
