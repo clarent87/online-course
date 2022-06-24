@@ -194,6 +194,7 @@ BDD 스타일을 Mockito도 지원을 한다.
 //        when(studyRepository.save(study)).thenReturn(study);
 
         // 위 코드를 아래처럼 바꿀수 있다. (BDDMockito package 이용)
+        // 즉 given 절에 쓰는 방식 👍
         given(memberService.findById(1L)).willReturn(Optional.of(member));
         given(studyRepository.save(study)).willReturn(study);
 
@@ -206,6 +207,7 @@ BDD 스타일을 Mockito도 지원을 한다.
         // 아래도 BDD style은 아님.. 그래서 BDDMockito 의 API로 변경하면..
 //        verify(memberService, times(1)).notify(study);
         // 이게 BDD 스타일. should 안에는 아무것도 안넣을 수도 있음
+        // then절에 쓰는 방식 👍
         then(memberService).should( times(1)).notify(study);
 
         // 이것도 BDD로 변경해보면
@@ -221,3 +223,16 @@ BDD 스타일을 Mockito도 지원을 한다.
   - <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#BDD_behavior_verification>
 
 ## Mockito 연습문제
+
+정리.  
+> 문제 풀지는 않았음
+
+- Q. 
+  static method mocking을 하려고 알아봤는데 mockito로는 안되는 것 같고
+  Powermock이 static method mocking이 가능하지만
+  junit5에서는 powermock 지원이 안된다고 하네요..
+  좋은 방법이 있을지 문의드립니다.
+
+- A
+  - JMockit이라는걸 써보시죠. 
+  - https://www.baeldung.com/jmockit-static-method
