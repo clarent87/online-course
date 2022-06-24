@@ -236,3 +236,10 @@ BDD 스타일을 Mockito도 지원을 한다.
 - A
   - JMockit이라는걸 써보시죠. 
   - https://www.baeldung.com/jmockit-static-method
+
+## 기타 
+
+void method의 경우 사용하는 api가 쫌 다름
+https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#do_family_methods_stubs
+  
+BDD일때도 어느정도 영향있을듯?
