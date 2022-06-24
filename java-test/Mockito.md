@@ -143,7 +143,7 @@ Mock 객체가 어떻게 사용이 됐는지 확인할 수 있다. ( mock 객체
 - 특정 시점 이후에 아무 일도 벌어지지 않았는지
   - Finding redundant invocations
   
-위 내용의 예시는 아래와 같다. 
+위 내용의 예시는 아래와 같다.
 
 ```java
   //  studyService.createNewStudy 호출시 내부적을
@@ -166,6 +166,58 @@ Mock 객체가 어떻게 사용이 됐는지 확인할 수 있다. ( mock 객체
 
 ```
 
-## BDD 스타일  Mockito api
+## BDD 스타일  Mockito api 👍
+
+BDD 스타일을 Mockito도 지원을 한다.  
+> 대충 BDD에 대한 설명 지원하는 framework들이 있따.. 뭐 이런 설명이 있긴했는데, 크게 도움은 안됨
+
+아래 예시를 보면 그냥 Mockito를 BDD 로 변하는거 있음. 이거 보는게 좋음
+
+```java
+    // BDD를 따르려면 test 이름도 should~~ 로 되어야함. (https://matheus.ro/2017/09/24/unit-test-naming-convention/)
+    // 근데 그냥 display name만 잘 써줘도 될거 같다함.
+    @Test
+    void createNewStudyBDD() {
+        //Givne
+        StudyService studyService = new StudyService(memberService, studyRepository);
+        assertNotNull(studyService);
+
+        Member member = new Member();
+        member.setId(1L);
+        member.setEmail("keesun@email.com");
+
+        Study study = new Study(10, "테스트");
+
+        // stubbing하는 부분은 BDD에 따르면 given에 해당하는데,, api이름이 맞지 않다..
+        // 그래서 BDD Mockito을 이용
+//        when(memberService.findById(1L)).thenReturn(Optional.of(member));
+//        when(studyRepository.save(study)).thenReturn(study);
+
+        // 위 코드를 아래처럼 바꿀수 있다. (BDDMockito package 이용)
+        given(memberService.findById(1L)).willReturn(Optional.of(member));
+        given(studyRepository.save(study)).willReturn(study);
+
+        //When
+        studyService.createNewStudy(1L, study);
+
+        //Then
+        assertEquals(member, study.getOwner()); // 쥬피터꺼
+
+        // 아래도 BDD style은 아님.. 그래서 BDDMockito 의 API로 변경하면..
+//        verify(memberService, times(1)).notify(study);
+        // 이게 BDD 스타일. should 안에는 아무것도 안넣을 수도 있음
+        then(memberService).should( times(1)).notify(study);
+
+        // 이것도 BDD로 변경해보면
+//        verifyNoInteractions(memberService);
+        then(memberService).shouldHaveNoMoreInteractions();
+
+    }
+
+```
+
+- 참고
+  - <https://javadoc.io/static/org.mockito/mockito-core/3.2.0/org/mockito/BDDMockito.html>
+  - <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#BDD_behavior_verification>
 
 ## Mockito 연습문제
