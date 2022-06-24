@@ -123,12 +123,48 @@ stubbing 이란 mock 객체의 행동을 조작하는!. 앞선 챕터에서는 M
 
   ```
 
-
 ## Mock 객체 stubbing 연습문제
 
-연습문제 풀이인데, 간단함. 아 굳이 풀진 안았다. 
+연습문제 풀이인데, 간단함. 아 굳이 풀진 안았다.
 
 ## Mock 객체 확인
+
+> 앞서 연습문제 예제/해답 가져왔음
+
+Mock 객체가 어떻게 사용이 됐는지 확인할 수 있다. ( mock 객체에 어떤일이 일어나는지 확인)
+
+- 특정 메소드가 특정 매개변수로 몇번 호출 되었는지, 최소 한번은 호출 됐는지, 전혀 호출되지 않았는지
+  - Verifying exact number of invocations
+- 어떤 순서대로 호출했는지
+  - Verification in order
+- 특정 시간 이내에 호출됐는지
+  - Verification with timeout
+  - > 이건 따로 해보진 않음. 근데 이거 쓸바에는 junit의 assertTimeout 쓰는게 좋다는듯.
+- 특정 시점 이후에 아무 일도 벌어지지 않았는지
+  - Finding redundant invocations
+  
+위 내용의 예시는 아래와 같다. 
+
+```java
+  //  studyService.createNewStudy 호출시 내부적을
+  //  memberService.notify(newstudy); 가 호출되는데, 이게 호출이 잘 됬는지 알길이 없음
+  //  memberService 는 mocking했고..
+  //  이럴때 아래와 같은 verify를 써서 mock의 동작을 확인 가능 ( matcher사용 가능 )
+  // 특정 시간안에 호출이 되야하는 게 있는경우 mockito의 timeout을 쓸수 있는데, 이럴 바에는 junit timeout을 쓰는게 낫다
+  verify(memberService, times(1)).notify(study); // notify가 1번 study 매개변수로 호출됬어야 한다.
+  verify(memberService, times(1)).notify(member);
+  verify(memberService, never()).validate(any()); // validate 는 한번도 호출되지 않았어야한다.
+
+  // 만약 notify 함수가 study로 한번 member로 한번 순서대로 호출되었는지 검증하려면?
+  // 이건 쫌 너무한 test 같다고는함. ( 순서까지 확인하는거.. )
+  // > 위쪽에서 verify한건 호출된 횟수 파악.하는거고 순서 확인에 영향을 주지는 않네.
+  InOrder inOrder = inOrder(memberService);
+  inOrder.verify(memberService).notify(study); // study로 먼저 호출되고
+  inOrder.verify(memberService).notify(member);// member로 호출되어야한다.
+
+  verifyNoInteractions(memberService); // 이거 호출된 이후로 더이상 memberService mock에 상호작용이 있어서는 안된다.
+
+```
 
 ## BDD 스타일  Mockito api
 
