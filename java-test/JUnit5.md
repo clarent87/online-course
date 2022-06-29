@@ -656,8 +656,8 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
   - @Category(Class) -> @Tag(String)
   - @RunWith, @Rule, @ClassRule -> @ExtendWith, @RegisterExtension
   - @Ignore -> @Disabled
-  - @Before, @After,  -> @BeforeClass, @AfterClass
-  - @BeforeEach, @AfterEach,  -> @BeforeAll, @AfterAll
+  - @Before, @After -> @BeforeEach, @AfterEach,
+  - @BeforeClass, @AfterClass -> @BeforeAll, @AfterAll
 
 
 > 이 양반 Rest 강좌.. 괜찮을수 있을거 같음. Test Case도 짯네. 보니까

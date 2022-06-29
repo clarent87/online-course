@@ -123,6 +123,9 @@ stubbing 이란 mock 객체의 행동을 조작하는!. 앞선 챕터에서는 M
 
   ```
 
+- answer인터페이스를 이용해서 argument에 따라 return 결과를 동적으로 제어 가능
+  - https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#21
+
 ## Mock 객체 stubbing 연습문제
 
 연습문제 풀이인데, 간단함. 아 굳이 풀진 안았다.
