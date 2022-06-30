@@ -124,7 +124,7 @@ stubbing 이란 mock 객체의 행동을 조작하는!. 앞선 챕터에서는 M
   ```
 
 - answer인터페이스를 이용해서 argument에 따라 return 결과를 동적으로 제어 가능
-  - https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#21
+  - <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#21>
 
 ## Mock 객체 stubbing 연습문제
 
@@ -230,19 +230,22 @@ BDD 스타일을 Mockito도 지원을 한다.
 정리.  
 > 문제 풀지는 않았음
 
-- Q. 
+- Q.
   static method mocking을 하려고 알아봤는데 mockito로는 안되는 것 같고
   Powermock이 static method mocking이 가능하지만
   junit5에서는 powermock 지원이 안된다고 하네요..
   좋은 방법이 있을지 문의드립니다.
 
 - A
-  - JMockit이라는걸 써보시죠. 
-  - https://www.baeldung.com/jmockit-static-method
+  - JMockit이라는걸 써보시죠.
+  - <https://www.baeldung.com/jmockit-static-method>
 
-## 기타 
+## 기타
 
-void method의 경우 사용하는 api가 쫌 다름
-https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#do_family_methods_stubs
-  
-BDD일때도 어느정도 영향있을듯?
+- void method의 경우 사용하는 api가 쫌 다름
+  - <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#do_family_methods_stubs>
+  - BDD일때도 어느정도 영향있을듯?
+
+- beforeall에서는 stubbing 안되나봄. 👍
+  - mockitoExtesion이 beforeall에 대해 구현이 안되어 있다네.
+  - <https://stackoverflow.com/questions/65543399/mockito-does-not-initialize-mock-in-test-running-with-junit-5-in-beforeall-anno>

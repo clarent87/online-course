@@ -665,3 +665,8 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
 ## JUnit 5 연습 문제
 
 학습했던 내용 정리 하는 시간
+
+## 기타 추가 내용
+
+- Befor 류에 fail이 나왔을시?
+  - https://stackoverflow.com/questions/61010940/junit5-react-to-before-methods-failure
