@@ -240,6 +240,81 @@ BDD 스타일을 Mockito도 지원을 한다.
   - JMockit이라는걸 써보시죠.
   - <https://www.baeldung.com/jmockit-static-method>
 
+## 내가 추가한것
+
+### @InjectMocks and @Mock(name)
+
+- 참조
+  <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/InjectMocks.html>
+
+inject하는 전략이 잇음
+
+```java
+
+   public class ArticleManagerTest extends SampleBaseTestCase {
+
+       @Mock private ArticleCalculator calculator;
+       @Mock(name = "database") private ArticleDatabase dbMock; // note the mock name attribute
+       @Spy private UserProvider userProvider = new ConsumerUserProvider();
+
+       @InjectMocks private ArticleManager manager;
+
+       @Test public void shouldDoSomething() {
+           manager.initiateArticle();
+           verify(database).addListener(any(ArticleListener.class));
+       }
+   }
+
+  // 1. 생성자 있을대 주입 됨
+  public class ArticleManager {
+       ArticleManager(ArticleCalculator calculator, ArticleDatabase database) {
+           // parameterized constructor
+       }
+   }
+
+  // 2. Field 인젝션 가능. 모키토가 reflection이용
+  public class ArticleManager {
+       private ArticleDatabase database;
+       private ArticleCalculator calculator;
+   }
+
+   // 3. 세터 주입도 가능
+   public class ArticleManager {
+       // no-arg constructor
+       ArticleManager() {  }
+
+       // setter
+       void setDatabase(ArticleDatabase database) { }
+
+       // setter
+       void setCalculator(ArticleCalculator calculator) { }
+   }
+
+   // 이경우는 inject가 안됨. 
+   public class ArticleManager {
+       private ArticleDatabase database;
+       private ArticleCalculator calculator;
+
+       ArticleManager(ArticleObserver observer, boolean flag) {
+           // observer is not declared in the test above.
+           // flag is not mockable anyway
+       }
+   }
+ 
+
+```
+
+- `@Mock(name = "database")`
+  - mock inject될때 이 mock은 database란 이름의 변수에 inject됨
+    - > 이거 mockBean의 내용과 유사하다.
+
+### Captor
+
+<https://site.mockito.org/javadoc/current/org/mockito/ArgumentCaptor.html>
+<https://www.baeldung.com/mockito-argumentcaptor>
+
+`Mockito.verify(platform).deliver(emailCaptor.capture());` 처럼 verify할때  param을 캡쳐해서 검사하는데 사용 가능
+
 ## 기타
 
 - void method의 경우 사용하는 api가 쫌 다름
