@@ -242,6 +242,16 @@ BDD 스타일을 Mockito도 지원을 한다.
 
 ## 내가 추가한것
 
+### spy
+
+mock과 spy는 사용법이 약간 다름.
+
+```java
+@Mock(name = "database") private ArticleDatabase dbMock; // 보면 mock은 객체 생성을 하지 않음.
+@Spy private UserProvider userProvider = new ConsumerUserProvider(); // spy는 real 객체를 줘야함.
+
+```
+
 ### @InjectMocks and @Mock(name)
 
 - 참조
@@ -314,6 +324,72 @@ inject하는 전략이 잇음
 <https://www.baeldung.com/mockito-argumentcaptor>
 
 `Mockito.verify(platform).deliver(emailCaptor.capture());` 처럼 verify할때  param을 캡쳐해서 검사하는데 사용 가능
+
+기본 사용법
+
+```java
+   ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
+   verify(mock).doSomething(argument.capture());
+   assertEquals("John", argument.getValue().getName());
+
+    //capturing varargs:
+   ArgumentCaptor<Person> varArgs = ArgumentCaptor.forClass(Person.class);
+   verify(mock).varArgMethod(varArgs.capture());
+   List expected = asList(new Person("John"), new Person("Jane"));
+   assertEquals(expected, varArgs.getAllValues());
+
+```
+
+`@Captor` 는 아래와 같이 사용하는데, warnings related capturing complex generic types 를 회피하는데 씀
+
+```java
+ public class Test{
+
+    @Captor ArgumentCaptor<AsyncCallback<Foo>> captor; // 복잡한 genric type을 captor..
+
+    @Before
+    public void init(){
+       MockitoAnnotations.initMocks(this);
+    }
+
+    @Test public void shouldDoSomethingUseful() {
+       //...
+       verify(mock).doStuff(captor.capture());
+       assertEquals("foo", captor.getValue());
+    }
+ }
+
+```
+
+### abstract class도 모킹이 가능
+
+- 참조
+  - <https://site.mockito.org/javadoc/current/org/mockito/Mockito.html#30>
+  - Spying or mocking abstract classes (Since 1.10.12)
+
+Previously, spying was only possible on instances of objects
+
+```java
+ //convenience API, new overloaded spy() method:
+ SomeAbstract spy = spy(SomeAbstract.class);
+
+ //Robust API, via settings builder:
+ OtherAbstract spy = mock(OtherAbstract.class, withSettings()
+    .useConstructor().defaultAnswer(CALLS_REAL_METHODS));
+
+ //Mocking a non-static inner abstract class:
+ InnerAbstract spy = mock(InnerAbstract.class, withSettings()
+    .useConstructor().outerInstance(outerInstance).defaultAnswer(CALLS_REAL_METHODS));
+
+```
+
+For more information please see MockSettings.useConstructor().
+
+### interface mocking
+
+- <https://www.baeldung.com/java-spring-mockito-mock-mockbean>
+
+기본적으로 모킹은 class, interface에 대해 가능한게 기본임
 
 ## 기타
 
