@@ -56,6 +56,7 @@
     - `when(methodCall).then(doSomething)`
   - BDDMockito 의 syntax
     - `given(methodCall).will(doSomething)`
+  - > 즉 bdd 아닌것들은 thenXX 이고 willXX 는 BDD 같음.
 
 - BDDMockito 의 willReturn, willAnswer 차이 👍
   - willAnswer는 mock method의 param을 이용해서 retsult를 만들때 사용
@@ -122,6 +123,9 @@ assertions의 description은 ` as(description) ` 로 작성.
 ( 즉  AssertJ will ignore your equals() implementation )  
   
 ### AssertJ에서 제공하는 유용한 assertions
+
+- 참조
+  - <https://thepracticaldeveloper.com/write-bdd-unit-tests-with-bddmockito-and-assertj/>
 
 일단 AssertJ의 장점은 실계 예제가 가득한
 <https://joel-costigliola.github.io/assertj/assertj-core-features-highlight.html> 이다.  
@@ -228,7 +232,8 @@ public class CityServiceTest {
 
 - Flexible equality assertions
   - `isEqualToIgnoringFields` 앞서 보였듯. 유연하게 비교하는 assertion들이 몇개 더 있음
-    - > 객체 비교할때 field에 값이 준비가 안된 case에 쓰는것들 인듯
+    - > 객체 비교할때 field에 값이 준비가 안된 case에 쓰는것들 인듯 
+    - > isEqualToIgnoringGivenFields .. 인듯? -> 이거 deprecated됨.
     - `isEqualToComparingFieldByField`
       - 객체가 다를때 `isEqualTo` 로는 fail이 나는데, 이걸 쓰면 field 단위로 비교를 해줘서 true가 나옴
       - > `isEqualTo` 는 기본적으로 객체 주소 비굔가??

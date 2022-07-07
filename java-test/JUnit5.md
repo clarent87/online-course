@@ -670,3 +670,12 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
 
 - Befor 류에 fail이 나왔을시?
   - https://stackoverflow.com/questions/61010940/junit5-react-to-before-methods-failure
+
+- jsonNode 비교
+  - https://www.baeldung.com/jackson-compare-two-json-objects
+  - 고민 포인트
+    - assertj에서 collection객체를 비교해주는게 있을까?
+    - 또는 jsonNode를 비교할수 잇을까?
+  - 해결
+    - 결국 두 객체가 equal을 어떻게 구현했는지가 관련
+      - > effective java에서 collection들은 eqauls를 value 비교.. 로 구현했다 한거 같기도.. -> 검증 필요
