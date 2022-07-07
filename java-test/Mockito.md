@@ -391,6 +391,22 @@ For more information please see MockSettings.useConstructor().
 
 기본적으로 모킹은 class, interface에 대해 가능한게 기본임
 
+### Mock 들어가는 시점
+
+- 일단 static은 mock이 안된다고 했고,
+- local block에서 초기화 되는 애들도 inject가 안됨.
+- 즉. 아래와 같다.
+  
+```java
+ @Mock
+ private PcbInfoMapper pcbInfoMapper;
+ private static PcbInfoConfig pcbInfoConfig;
+ private static Executor getAsyncExecutor;
+ // pcbInfoMapper mock안들어감.. NULL들어감
+ private PcbInfoCacheStore pcbInfoCacheStore= new PcbInfoCacheStore(pcbInfoConfig, pcbInfoMapper, getAsyncExecutor); 
+  
+```
+
 ## 기타
 
 - void method의 경우 사용하는 api가 쫌 다름
