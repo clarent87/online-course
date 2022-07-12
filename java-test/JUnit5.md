@@ -679,3 +679,6 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
   - 해결
     - 결국 두 객체가 equal을 어떻게 구현했는지가 관련
       - > effective java에서 collection들은 eqauls를 value 비교.. 로 구현했다 한거 같기도.. -> 검증 필요
+
+- test suite 만들기
+  - https://www.softwaretestinghelp.com/junit-test-suite/#Creating_A_Test_Suite_grouping_Multiple_Test_Classes
