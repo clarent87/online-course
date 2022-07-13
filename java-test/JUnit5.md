@@ -710,9 +710,10 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
 
   ```
 
-- @
 
-- java로 testsuite 직접 돌리는 법
+### java로 testsuite 직접 돌리는 법 
+
+- junit4의 경우..
   - <https://www.tutorialspoint.com/junit/junit_suite_test.htm>
 
   ```java
@@ -729,3 +730,10 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
   } 
 
   ```
+  - 신기한점..
+    - 저런 식으로 test를 돌리면 test scope 며 뭐며 이게 아니라 run time에 main에서 도는 것인데.. 
+    - ~~spring test 및 spring 어노테이션이 모두 처리되나봄..~~ 
+    - ~~> 이게 아마 maven-jar-plugin에서 말했던 test관련 transitive-dependeny 때문에 추천하던 방식.. 그 원리 같음.~~
+    - 코드를 보니 spring-boot-test 디펜던시 스코프를 변경하였음..runtime에도 돌게..
+
+- > junit5에서는 JUnitCore가 없어진듯...
