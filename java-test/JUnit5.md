@@ -737,3 +737,4 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
     - 코드를 보니 spring-boot-test 디펜던시 스코프를 변경하였음..runtime에도 돌게..
 
 - > junit5에서는 JUnitCore가 없어진듯...
+  - https://stackoverflow.com/questions/39111501/whats-the-equivalent-of-org-junit-runner-junitcore-runclasses-in-junit-5
