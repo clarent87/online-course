@@ -536,7 +536,7 @@ JUnit을 설정하는 기능, JUnit5에서 파일로 제어할수 있도록 제�
   - > 여기서는 두가지만 볼꺼고, 단순한 사용방법으로 예시를 만들어봄
   - 선언적인 등록 @ExtendWith
   - 프로그래밍 등록 @RegisterExtension
-  - 자동 등록 자바 ServiceLoader 이용 
+  - 자동 등록 자바 ServiceLoader 이용
     - > 이거는 가이드 문서 참조하라고 함
 
 - 확장 모델 만드는 가이드
@@ -621,7 +621,7 @@ public class FindSlowTestExtension implements BeforeTestExecutionCallback, After
 
 ## JUnit 5 마이그레이션
 
-JUnit 5가 제공하는 JUnit 4 마이그레이션 
+JUnit 5가 제공하는 JUnit 4 마이그레이션
 
 - 기본적으로 spring boot로 프로젝트를 만들면 vintage-engine이 빠진상태라고함
   - > 이게 있어야 JUnit 4 test들을 실행할수 잇음
@@ -637,9 +637,10 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
             </dependency>
 
     ```
+
     > 2.7.0에서 어떻게 세팅해야 할지 나중에 확인 필요
 
-- JUnit 4로 작성한 test는 
+- JUnit 4로 작성한 test는
   - JUnit 5의 Junit platform이 vintage 엔진을 통해 실행시켜 주는듯
   - `@Test` 도 jupiter꺼를 쓰면 안되고 JUnit 꺼를 쓰면 이게 JUnit 4 꺼임
   
@@ -651,14 +652,15 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
     - Verifier
     - ExpectedException
 
-
 - Junit4 -> Junit5
   - @Category(Class) -> @Tag(String)
+  - @IncludeCategory -> @IncludeTag
+  - @Suite.~ ->  @SelectClasses, @SelectPackages 랑 @Suite를 같이 사용
+    - > <https://howtodoinjava.com/junit5/junit5-test-suites-examples/> 👍
   - @RunWith, @Rule, @ClassRule -> @ExtendWith, @RegisterExtension
   - @Ignore -> @Disabled
   - @Before, @After -> @BeforeEach, @AfterEach,
   - @BeforeClass, @AfterClass -> @BeforeAll, @AfterAll
-
 
 > 이 양반 Rest 강좌.. 괜찮을수 있을거 같음. Test Case도 짯네. 보니까
 
@@ -669,10 +671,10 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
 ## 기타 추가 내용
 
 - Befor 류에 fail이 나왔을시?
-  - https://stackoverflow.com/questions/61010940/junit5-react-to-before-methods-failure
+  - <https://stackoverflow.com/questions/61010940/junit5-react-to-before-methods-failure>
 
 - jsonNode 비교
-  - https://www.baeldung.com/jackson-compare-two-json-objects
+  - <https://www.baeldung.com/jackson-compare-two-json-objects>
   - 고민 포인트
     - assertj에서 collection객체를 비교해주는게 있을까?
     - 또는 jsonNode를 비교할수 잇을까?
@@ -681,4 +683,49 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
       - > effective java에서 collection들은 eqauls를 value 비교.. 로 구현했다 한거 같기도.. -> 검증 필요
 
 - test suite 만들기
-  - https://www.softwaretestinghelp.com/junit-test-suite/#Creating_A_Test_Suite_grouping_Multiple_Test_Classes
+  - <https://www.softwaretestinghelp.com/junit-test-suite/#Creating_A_Test_Suite_grouping_Multiple_Test_Classes>
+
+### junit4의 카테고리/suite
+  
+- 참조
+  - <https://mkyong.com/unittest/junit-categories-test/>
+  - <https://mkyong.com/unittest/junit-categories-test/>
+
+- @Category
+  - 기본적으로 @Category 어노테이션을 위한 marker interface 를 만들어야함
+    - > @Tag에서는 그냥 string 을 value로 주면 되는데.. 이건 아니네..
+  - Category 는 method 나 type 레벨에 붙일수 있음
+
+- @Suite.SuiteClasses
+  - 이 test 돌릴때 같이 돌릴 test들을 나열
+
+  ```java
+
+
+  @RunWith(Suite.class)
+  @Suite.SuiteClasses({SoccerPlayerTest.class, BaseballPlayerTest.class})
+  public class SuiteTest {
+  }
+
+
+  ```
+
+- @
+
+- java로 testsuite 직접 돌리는 법
+  - <https://www.tutorialspoint.com/junit/junit_suite_test.htm>
+
+  ```java
+  public class TestRunner {
+    public static void main(String[] args) {
+        Result result = JUnitCore.runClasses(JunitTestSuite.class); // JunitTestSuite.class는 만든 test suite
+
+        for (Failure failure : result.getFailures()) {
+          System.out.println(failure.toString());
+        }
+      
+        System.out.println(result.wasSuccessful());
+    }
+  } 
+
+  ```
