@@ -232,7 +232,7 @@ public class CityServiceTest {
 
 - Flexible equality assertions
   - `isEqualToIgnoringFields` 앞서 보였듯. 유연하게 비교하는 assertion들이 몇개 더 있음
-    - > 객체 비교할때 field에 값이 준비가 안된 case에 쓰는것들 인듯 
+    - > 객체 비교할때 field에 값이 준비가 안된 case에 쓰는것들 인듯
     - > isEqualToIgnoringGivenFields .. 인듯? -> 이거 deprecated됨.
     - `isEqualToComparingFieldByField`
       - 객체가 다를때 `isEqualTo` 로는 fail이 나는데, 이걸 쓰면 field 단위로 비교를 해줘서 true가 나옴
@@ -319,5 +319,17 @@ public class CityServiceTest {
         cityService = new CityService(cityRepository, populationService);
         Assertions.useRepresentation(new CityRepresentation());
     }
+
+```
+
+### 예시
+
+```java
+
+  BDDAssertions.then(response)
+    .extracting("code", "message")
+    .containsExactly("0", "success");
+
+  BDDAssertions.then(response).returns("0", BaseResponse::getCode);
 
 ```
