@@ -126,6 +126,9 @@ stubbing 이란 mock 객체의 행동을 조작하는!. 앞선 챕터에서는 M
 - answer인터페이스를 이용해서 argument에 따라 return 결과를 동적으로 제어 가능
   - <https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#21>
 
+- stub의 경우 각각의 testmethod에서 세팅한것은 호출이후 reset됨. 
+  - > 아마 test class instance가 매번 생성되기 때문일것으로 추정. 
+
 ## Mock 객체 stubbing 연습문제
 
 연습문제 풀이인데, 간단함. 아 굳이 풀진 안았다.
@@ -406,6 +409,12 @@ For more information please see MockSettings.useConstructor().
  private PcbInfoCacheStore pcbInfoCacheStore= new PcbInfoCacheStore(pcbInfoConfig, pcbInfoMapper, getAsyncExecutor); 
   
 ```
+
+### 제네릭 method mock
+
+- <https://dzone.com/articles/mocking-method-with-wildcard-generic-return-type>
+  - doReturn을 쓰라는데, 이거 void일때만 쓰는건 아닌가봄. 
+  - Use doReturn() in those rare occasions when you cannot use when(Object). 라고 나옴 공홈 문서에.. 
 
 ## 기타
 
