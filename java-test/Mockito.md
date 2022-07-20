@@ -245,6 +245,27 @@ BDD 스타일을 Mockito도 지원을 한다.
 
 ## 내가 추가한것
 
+
+### void method
+
+void method의 경우 method call이 bracket 안에 들어가는것을 컴파일러가 싫어해서 쫌 다른 형태로 구현 필요
+이건 BDD 적용시도 마찬가지
+
+```java
+  // 이렇게 해야함
+  doAnswer(new Answer() {
+      public Object answer(InvocationOnMock invocation) {
+          Object[] args = invocation.getArguments();
+          Mock mock = invocation.getMock();
+          return null;
+      }})
+  .when(mock).someMethod();
+
+  // get함수가 void였다면 이렇게 () 안에 method call이 들어가는것을 컴파일러가 싫어한다는것
+   when(mockedList.get(0)).thenReturn("first");
+ 
+```
+
 ### spy
 
 mock과 spy는 사용법이 약간 다름.

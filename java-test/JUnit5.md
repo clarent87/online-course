@@ -744,3 +744,9 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
     - junit5에서는 JUnitCore가 없어진듯...
   - <https://www.baeldung.com/junit-tests-run-programmatically-from-java>
     - 따라서 이걸이용해서 진행
+
+### 로그 메시지 test
+
+- <https://www.baeldung.com/junit-asserting-logs>
+  - 로그 어펜더 만들어서 진행
+  - > 나는 그냥 spring에서 outputCapture 받아서 처리 함. 
