@@ -133,7 +133,7 @@ stubbing 이란 mock 객체의 행동을 조작하는!. 앞선 챕터에서는 M
 
 연습문제 풀이인데, 간단함. 아 굳이 풀진 안았다.
 
-## Mock 객체 확인
+## Mock 객체 verify
 
 > 앞서 연습문제 예제/해답 가져왔음
 
@@ -436,6 +436,24 @@ For more information please see MockSettings.useConstructor().
 - <https://dzone.com/articles/mocking-method-with-wildcard-generic-return-type>
   - doReturn을 쓰라는데, 이거 void일때만 쓰는건 아닌가봄. 
   - Use doReturn() in those rare occasions when you cannot use when(Object). 라고 나옴 공홈 문서에.. 
+
+### methed의 return이 제네릭 일때
+
+https://dzone.com/articles/mocking-method-with-wildcard-generic-return-type
+
+### 주의 사항
+
+- 참조
+  - https://github.com/HomoEfficio/dev-tips/blob/master/Mockito%20Stub%20%EC%9E%91%EC%84%B1%20%EC%8B%9C%20%EC%A3%BC%EC%9D%98%20%EC%82%AC%ED%95%AD.md
+
+- 문제1
+
+  ```java
+      // 아래 코드는 오류남. (This exception may occur if matchers are combined with raw values:)
+      // matcher와 raw value를 같이 쓰면안됨
+      BDDMockito.then(restServiceInvoker).should()
+          .sendPcbData(anyString(), ID_SITE, ID_GW, any(), BaseResponse.class);
+  ```
 
 ## 기타
 

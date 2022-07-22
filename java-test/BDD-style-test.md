@@ -333,3 +333,24 @@ public class CityServiceTest {
   BDDAssertions.then(response).returns("0", BaseResponse::getCode);
 
 ```
+
+- iterable에서 contain
+  - > 객체가 @Data라 equals, hashcode 오버라이딩 되어 있음
+  - > 그래서 그런지 value 비교가 진행됨
+
+  ```java
+    @Test
+    void ex() {
+
+      BaseResponse baseResponse1 = new BaseResponse("sf1", "ff");
+      BaseResponse baseResponse2 = new BaseResponse("sf2", "ff");
+      BaseResponse baseResponse5 = new BaseResponse("sf2", "ff");
+
+      BaseResponse baseResponse3 = new BaseResponse("sf1", "ff");
+      BaseResponse baseResponse4 = new BaseResponse("sf2", "ff");
+
+      List<BaseResponse> baseResponse11 = List.of(baseResponse1, baseResponse2, baseResponse5);
+      BDDAssertions.then(baseResponse11).containsOnly(baseResponse3,baseResponse4);
+    }
+
+  ```
