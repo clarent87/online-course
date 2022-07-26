@@ -157,6 +157,7 @@ AssertJ, Hemcrest, Truth 등의 라이브러리를 사용할 수도 있다.
     }
 
 ```
+> assertj 것으로 해보니, assumeThat를 만족안하면 test가 ignore됨.. 왜 ingnore 되었는지는 로그로 나오긴 함
 
 - org.junit.jupiter.api.Assumptions.*
   - assumeTrue(조건)
