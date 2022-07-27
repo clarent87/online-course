@@ -139,6 +139,7 @@ AssertJ, Hemcrest, Truth 등의 라이브러리를 사용할 수도 있다.
 이를테면, 특정한 java 버전이나, 혹은 특정한 환경변수가 있을때만 test를 실행해야할때  
 > 이건 쓸만 하겠는데?
 
+- assumptions은 만족못하면 disabled랑 같은 동작을 한다. 
 - jupiter의 Assumptions에서 제공하는 api를 아래 처럼 사용
 
 ```java
@@ -157,6 +158,7 @@ AssertJ, Hemcrest, Truth 등의 라이브러리를 사용할 수도 있다.
     }
 
 ```
+
 > assertj 것으로 해보니, assumeThat를 만족안하면 test가 ignore됨.. 왜 ingnore 되었는지는 로그로 나오긴 함
 
 - org.junit.jupiter.api.Assumptions.*
@@ -242,6 +244,11 @@ AssertJ, Hemcrest, Truth 등의 라이브러리를 사용할 수도 있다.
 - 추가
   - JUnit4의 @Categry가 JUnit5에서 @Tag로 변경됨
   - <https://www.baeldung.com/junit-5-migration>
+
+- 추가
+  - mvn에서 tag 필터링은?
+    - <https://stackoverflow.com/questions/42421688/how-to-choose-which-junit5-tags-to-execute-with-maven>
+    - pom파일에 프로퍼티를 두는 방법 밖에 없는듯. 나머지는 위와 같음
 
 ## JUnit 5 커스텀 태그
 
@@ -696,6 +703,20 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
   - 기본적으로 @Category 어노테이션을 위한 marker interface 를 만들어야함
     - > @Tag에서는 그냥 string 을 value로 주면 되는데.. 이건 아니네..
   - Category 는 method 나 type 레벨에 붙일수 있음
+  - 사용법은 다음과 같음
+    - <https://junit.org/junit4/javadoc/4.13/org/junit/experimental/categories/Categories.html>
+
+    ```java
+    
+      @RunWith(Categories.class) // IncludeCategory와 함께 사용. 
+      @IncludeCategory(SlowTests.class)
+      @SuiteClasses({A.class, B.class})
+      // Note that Categories is a kind of Suite
+      public static class SlowTestSuite {
+          // Will run A.b and B.d, but not A.a and A.c
+      }
+
+    ```
 
 - @Suite.SuiteClasses
   - 이 test 돌릴때 같이 돌릴 test들을 나열
@@ -745,9 +766,11 @@ JUnit 5가 제공하는 JUnit 4 마이그레이션
     - junit5에서는 JUnitCore가 없어진듯...
   - <https://www.baeldung.com/junit-tests-run-programmatically-from-java>
     - 따라서 이걸이용해서 진행
+  - <https://junit.org/junit5/docs/5.0.0/api/org/junit/platform/launcher/core/LauncherDiscoveryRequestBuilder.html>
+    - 이것도 참조
 
 ### 로그 메시지 test
 
 - <https://www.baeldung.com/junit-asserting-logs>
   - 로그 어펜더 만들어서 진행
-  - > 나는 그냥 spring에서 outputCapture 받아서 처리 함. 
+  - > 나는 그냥 spring에서 outputCapture 받아서 처리 함.
