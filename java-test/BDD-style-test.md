@@ -75,6 +75,10 @@
 - Where is the `When` in Mockito BDD?
   - when절용 BDD 모키토는 당연히 없음. 그냥 알아서 target api호출하고 위에 `//when` 붙여준다.
 
+## 계층형 
+
+- https://johngrib.github.io/wiki/junit5-nested/
+
 ## AspectJ와 Then 절
 
 - `then` 절은 어떻게??
